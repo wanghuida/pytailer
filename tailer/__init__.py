@@ -16,7 +16,7 @@ class Tailer(object):
         self.start_pos = self.file.tell()
         if end:
             self.seek_end()
-    
+
     def splitlines(self, data):
         return re.split('|'.join(self.line_terminators), data)
 
@@ -48,7 +48,7 @@ class Tailer(object):
             # The first charachter is a line terminator, don't count this one
             start += 1
 
-        while bytes_read > 0:          
+        while bytes_read > 0:
             # Scan forwards, counting the newlines in this bufferfull
             i = start
             while i < bytes_read:
@@ -90,7 +90,7 @@ class Tailer(object):
                 # found crlf
                 bytes_read -= 1
 
-        while bytes_read > 0:          
+        while bytes_read > 0:
             # Scan backward, counting the newlines in this bufferfull
             i = bytes_read - 1
             while i >= 0:
@@ -110,7 +110,7 @@ class Tailer(object):
             bytes_read, read_str = self.read(self.read_size)
 
         return None
-  
+
     def tail(self, lines=10):
         """\
         Return the last lines of the file.
@@ -127,7 +127,7 @@ class Tailer(object):
             return self.splitlines(data)
         else:
             return []
-               
+
     def head(self, lines=10):
         """\
         Return the top lines of the file.
@@ -137,9 +137,9 @@ class Tailer(object):
         for i in xrange(lines):
             if not self.seek_line_forward():
                 break
-    
+
         end_pos = self.file.tell()
-        
+
         self.seek(0)
         data = self.file.read(end_pos - 1)
 
@@ -154,12 +154,12 @@ class Tailer(object):
 
         Based on: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/157035
         """
-        trailing = True       
-        
+        trailing = True
+
         while 1:
             where = self.file.tell()
             line = self.file.readline()
-            if line:    
+            if line:
                 if trailing and line in self.line_terminators:
                     # This is just the line terminator added to the end of the file
                     # before a new line, ignore.
@@ -211,7 +211,7 @@ def head(file, lines=10):
     """
     return Tailer(file).head(lines)
 
-def follow(file, delay=1.0):
+def follow(file, delay=1.0, end=True):
     """\
     Iterator generator that returns lines as data is added to the file.
 
@@ -231,7 +231,7 @@ def follow(file, delay=1.0):
     >>> fo.close()
     >>> os.remove('test_follow.txt')
     """
-    return Tailer(file, end=True).follow(delay)
+    return Tailer(file, end=end).follow(delay)
 
 def _test():
     import doctest
@@ -250,7 +250,7 @@ def _main(filepath, options):
                     lines = tailer.head(options.lines)
                 else:
                     lines = tailer.tail(options.lines)
-        
+
                 for line in lines:
                     print line
             elif options.follow:
